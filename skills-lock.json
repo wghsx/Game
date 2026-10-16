@@ -1,0 +1,113 @@
+{
+  "version": 1,
+  "skills": {
+    "develop-web-game": {
+      "source": "firecrawl/openai-skills",
+      "sourceType": "github",
+      "skillPath": "skills/.curated/develop-web-game/SKILL.md",
+      "computedHash": "ce15d03cc8c299e062c6b6b31a1238264b06c7b23900a58861e53073e1ac9739"
+    },
+    "game-design-theory": {
+      "source": "pluginagentmarketplace/custom-plugin-game-developer",
+      "sourceType": "github",
+      "skillPath": "skills/game-design-theory/SKILL.md",
+      "computedHash": "e87a16b82d8379b1389c94b15b16d2f52a611338467291aeeec4f72a73a7fd96"
+    },
+    "game-developer": {
+      "source": "jeffallan/claude-skills",
+      "sourceType": "github",
+      "skillPath": "skills/game-developer/SKILL.md",
+      "computedHash": "ba065b6baf9bce85651e73a111d1460dbb082e1380a823455e9abc3ffecbc9a6"
+    },
+    "game-engine": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/game-engine/SKILL.md",
+      "computedHash": "20057f62cf7a8b2d9f940b3de0b18e5426e8f4bb50e236d36b1033aa0d42c4d8"
+    },
+    "game-feel": {
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/disciplines/game-feel/SKILL.md",
+      "computedHash": "fd8a092926b904a974494ef9e9d123c6a5f872dfaf2ab8f1affd9d015ec95dc3"
+    },
+    "game-networking": {
+      "source": "omer-metin/skills-for-antigravity",
+      "sourceType": "github",
+      "skillPath": "skills/game-networking/SKILL.md",
+      "computedHash": "1fd42a9589471f5387bb3f56665447f51f3e381a34be7e0ed50d8ce09d7a37f6"
+    },
+    "game-ui-design": {
+      "source": "omer-metin/skills-for-antigravity",
+      "sourceType": "github",
+      "skillPath": "skills/game-ui-design/SKILL.md",
+      "computedHash": "cff8acaf58f3f4255f76fb962775fb1a2fec1fce49a54a50bde2c1efd5eb33ec"
+    },
+    "game-ui-ux": {
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/disciplines/game-ui-ux/SKILL.md",
+      "computedHash": "4234b295c380c907a2b196b2a6b32a158ee942ac3708ea63e13f0514332e4fd1"
+    },
+    "higgsfield-game-generation": {
+      "source": "kaveone/higgsfield-skills",
+      "sourceType": "github",
+      "skillPath": "higgsfield-game-generation/SKILL.md",
+      "computedHash": "efa7a444d560a94f924b1d5f8a0e6b8155f1f4ceb314ad626e412798dd0b1014"
+    },
+    "threejs-3d-generator": {
+      "source": "majidmanzarpour/threejs-game-skills",
+      "sourceType": "github",
+      "skillPath": "skills/threejs-3d-generator/SKILL.md",
+      "computedHash": "bb86884aa4edc44a91ddeed75a11d7123a40a12b295fe50c75299c944b688ce3"
+    },
+    "threejs-aaa-graphics-builder": {
+      "source": "majidmanzarpour/threejs-game-skills",
+      "sourceType": "github",
+      "skillPath": "skills/threejs-aaa-graphics-builder/SKILL.md",
+      "computedHash": "8dfe7d9712858d02568f3280ff62135078d6678ada9860b2aa7eec09b40aca5c"
+    },
+    "threejs-audio-generator": {
+      "source": "majidmanzarpour/threejs-game-skills",
+      "sourceType": "github",
+      "skillPath": "skills/threejs-audio-generator/SKILL.md",
+      "computedHash": "9511b5e10bc232847c0ced8c63a97e3b31c466fef982e9bfddcd0db051b7aae8"
+    },
+    "threejs-debug-profiler": {
+      "source": "majidmanzarpour/threejs-game-skills",
+      "sourceType": "github",
+      "skillPath": "skills/threejs-debug-profiler/SKILL.md",
+      "computedHash": "a0e559560d74f2647278e18b18a809ade6faed80781c355f6bbc62dbe7e83066"
+    },
+    "threejs-game-director": {
+      "source": "majidmanzarpour/threejs-game-skills",
+      "sourceType": "github",
+      "skillPath": "skills/threejs-game-director/SKILL.md",
+      "computedHash": "f190a80ae1365064e7b3d6e33be2d6a8d04d18eb5a3805f651905a200d7c82fb"
+    },
+    "threejs-game-ui-designer": {
+      "source": "majidmanzarpour/threejs-game-skills",
+      "sourceType": "github",
+      "skillPath": "skills/threejs-game-ui-designer/SKILL.md",
+      "computedHash": "22b93927ab7ff180bc1b0f830168a50023266766a43bf6310f2164ea5a6c454e"
+    },
+    "threejs-gameplay-systems": {
+      "source": "majidmanzarpour/threejs-game-skills",
+      "sourceType": "github",
+      "skillPath": "skills/threejs-gameplay-systems/SKILL.md",
+      "computedHash": "2cb076146a8e006254d769dd978fb484e6231e2918cb85bdf285c65bc6b412b1"
+    },
+    "threejs-image-generator": {
+      "source": "majidmanzarpour/threejs-game-skills",
+      "sourceType": "github",
+      "skillPath": "skills/threejs-image-generator/SKILL.md",
+      "computedHash": "6e65acb7d552f1b1fb8a550fbfc38b3e11b0a187a759241bf20f6511e7eac405"
+    },
+    "threejs-qa-release": {
+      "source": "majidmanzarpour/threejs-game-skills",
+      "sourceType": "github",
+      "skillPath": "skills/threejs-qa-release/SKILL.md",
+      "computedHash": "30fc188c909eb6a09bc8dd121481267cd2b5605d8b24935f338e7a07121c9872"
+    }
+  }
+}
