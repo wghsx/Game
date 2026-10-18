@@ -31,6 +31,7 @@
 6. **3D 资产与角色模型 (3D Assets & Rigging)**
    - 技能：`threejs-3d-generator`、`higgsfield-game-generation`
    - 适用场景：3D 模型生成、材质贴图、骨骼绑定、动画重定向与 GLB/FBX 导出导入。
+   - **Blender 协同规范**：针对 Blender 的模型操作、材质设置与调整，**统一使用 MCP 工具 (mcp-for-blender) 连接 live Blender 实例进行代码与资产操作**，严禁使用鼠标模拟。
 
 7. **游戏音频与音效 (Audio & SFX)**
    - 技能：`threejs-audio-generator`

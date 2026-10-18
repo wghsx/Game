@@ -5,9 +5,9 @@
   "description": "樱町计划 (SakuraBlock) - 3D日本现代都市模拟经营RPG (Three.js + Vite)",
   "type": "module",
   "scripts": {
-    "dev": "vite --port 3000",
+    "dev": "vite --port 5173",
     "build": "vite build",
-    "preview": "vite preview --port 3000"
+    "preview": "vite preview --port 5173"
   },
   "dependencies": {
     "three": "^0.170.0"

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>樱町计划 (SakuraBlock) - 3D日本现代都市模拟经营RPG</title>
-  <!-- 内置 ImportMap，既支持 Vite (npm run dev) 也支持反重力/Live Server 直接打开预览 -->
+  <link rel="icon" href="data:," />
   <script type="importmap">
     {
       "imports": {
@@ -14,291 +14,502 @@
     }
   </script>
   <style>
+    :root {
+      --ink: #23262b;
+      --ink-soft: rgba(35, 38, 43, 0.58);
+      --ink-faint: rgba(35, 38, 43, 0.38);
+      --line: rgba(35, 38, 43, 0.12);
+      --line-strong: rgba(35, 38, 43, 0.22);
+      --paper: rgba(249, 246, 240, 0.93);
+      --paper-solid: #f9f6f0;
+      --accent: #9c3a30;
+      --accent-soft: rgba(156, 58, 48, 0.09);
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Microsoft YaHei", sans-serif;
+      --serif: "Songti SC", "Hiragino Mincho ProN", "Yu Mincho", "SimSun", serif;
+      --lip: 34px;
+      --ledger-w: 376px;
+      --env-w: 306px;
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
-    body, html { width: 100%; height: 100%; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", "Microsoft YaHei", sans-serif; background: #0f172a; color: #1e293b; }
+
+    body, html {
+      width: 100%; height: 100%; overflow: hidden;
+      font-family: var(--sans); background: #0f172a; color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+    }
+
     #game-canvas { width: 100vw; height: 100vh; display: block; }
 
-    /* 顶部 HUD 指标栏 - 放大字号与内边距，提升自适应 */
+    /* ---------- 顶部细条 ---------- */
     .top-hud {
-      position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
-      display: flex; gap: 10px 14px; padding: 12px 22px;
-      background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(14px);
-      border-radius: 999px; border: 1.5px solid rgba(244, 114, 182, 0.4);
-      box-shadow: 0 10px 32px rgba(15, 23, 42, 0.18); z-index: 20;
-      flex-wrap: wrap; align-items: center; justify-content: center;
-      max-width: 95vw;
+      position: fixed; top: 0; left: 0; right: 0; height: 34px;
+      display: flex; align-items: center; padding: 0 12px;
+      background: rgba(249, 246, 240, 0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
+      font-size: 12px; z-index: 30;
+      overflow: hidden;
     }
-    .hud-pill {
-      display: flex; align-items: center; gap: 7px;
-      font-size: 14px; font-weight: 700; padding: 6px 14px;
-      border-radius: 999px; background: rgba(248, 250, 252, 0.95);
-      border: 1px solid #e2e8f0;
+
+    .hud-item {
+      display: flex; align-items: center; gap: 6px;
+      padding: 0 12px; height: 16px;
+      border-right: 1px solid var(--line);
       white-space: nowrap;
     }
-    .hud-pill span.val { color: #db2777; font-weight: 800; font-size: 14.5px; }
+    .hud-item:first-child { padding-left: 2px; }
+    .hud-item:last-child { border-right: none; }
 
-    /* 左侧樱町经营手账面板 - 宽度从 350px 扩展至 410px，按钮高度与字体全面放大 */
-    .side-notebook {
-      position: fixed; top: 84px; left: 20px; width: min(410px, 32vw); max-height: calc(100vh - 170px);
-      background: rgba(255, 255, 255, 0.93); backdrop-filter: blur(16px);
-      border-radius: 20px; border: 1.5px solid rgba(244, 114, 182, 0.4);
-      box-shadow: 0 16px 36px rgba(15, 23, 42, 0.18);
-      display: flex; flex-direction: column; overflow: hidden; z-index: 20;
+    .hud-label { color: var(--ink-faint); letter-spacing: 0.02em; }
+    .hud-item .val {
+      font-weight: 600; color: var(--ink);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.01em;
     }
-    .tabs-bar { display: grid; grid-template-columns: repeat(4, 1fr); background: #fdf2f8; border-bottom: 1.5px solid #fbcfe8; }
+    .hud-brand {
+      font-family: var(--serif);
+      font-size: 13px; letter-spacing: 0.14em;
+      color: var(--accent); font-weight: 600;
+    }
+
+    /* ---------- 侧栏通用 ---------- */
+    .panel {
+      position: fixed; top: 34px; bottom: 0;
+      display: flex; flex-direction: column;
+      background: var(--paper);
+      backdrop-filter: blur(16px);
+      transition: transform 0.26s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 25;
+    }
+
+    #ledger { left: 0; width: var(--ledger-w); border-right: 1px solid var(--line-strong);
+      box-shadow: 6px 0 22px rgba(20, 24, 30, 0.07); }
+    #ledger.collapsed { transform: translateX(calc(-1 * var(--ledger-w))); box-shadow: none; }
+
+    #env { right: 0; width: var(--env-w); border-left: 1px solid var(--line-strong);
+      box-shadow: -6px 0 22px rgba(20, 24, 30, 0.07); }
+    #env.collapsed { transform: translateX(var(--env-w)); box-shadow: none; }
+
+    .panel-inner {
+      flex: 1; display: flex; flex-direction: column; min-height: 0;
+      background-image: repeating-linear-gradient(
+        0deg, rgba(120, 100, 80, 0.028) 0 1px, transparent 1px 4px);
+    }
+
+    /* 收起后露在外面的竖条 */
+    .panel-lip {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: var(--lip); height: 112px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--paper-solid);
+      border: 1px solid var(--line-strong);
+      color: var(--ink-soft);
+      font-family: var(--serif);
+      font-size: 12.5px; letter-spacing: 0.18em;
+      writing-mode: vertical-rl; text-orientation: upright;
+      cursor: pointer; padding: 0;
+      transition: color 0.18s, background 0.18s;
+      z-index: 2;
+    }
+    .panel-lip:hover { color: var(--ink); background: #fff; }
+    .lip-right { right: calc(-1 * var(--lip)); border-radius: 0 4px 4px 0; border-left: none; }
+    .lip-left { left: calc(-1 * var(--lip)); border-radius: 4px 0 0 4px; border-right: none; }
+
+    /* ---------- 手账标签页 ---------- */
+    .tabs-bar {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      border-bottom: 1px solid var(--line);
+      background: transparent;
+      flex-shrink: 0;
+    }
+
     .tab-btn {
-      padding: 13px 4px; font-size: 13.5px; font-weight: 800; border: none; background: transparent;
-      cursor: pointer; color: #64748b; transition: all 0.2s; white-space: nowrap;
+      padding: 11px 2px 9px;
+      font-size: 12.5px; font-weight: 500;
+      border: none; background: transparent; cursor: pointer;
+      color: var(--ink-faint);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: color 0.16s, border-color 0.16s;
+      letter-spacing: 0.02em;
     }
-    .tab-btn:hover { color: #db2777; background: #fff1f2; }
-    .tab-btn.active { color: #db2777; background: #ffffff; border-bottom: 3.5px solid #ec4899; }
-    .tab-pane { display: none; padding: 14px 16px; overflow-y: auto; max-height: 480px; }
+    .tab-btn:hover { color: var(--ink); }
+    .tab-btn.active { color: var(--ink); border-bottom-color: var(--accent); }
+
+    .tab-scroll { flex: 1; overflow-y: auto; min-height: 0; }
+
+    .tab-pane { display: none; padding: 4px 16px 12px; }
     .tab-pane.active { display: block; }
 
+    .pane-title {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
+      color: var(--ink-faint); text-transform: uppercase;
+      margin: 14px 0 8px;
+    }
+    .pane-note {
+      font-size: 12px; line-height: 1.65; color: var(--ink-soft);
+      margin: 10px 0 12px;
+    }
+
+    /* ---------- 商铺条目 ---------- */
     .card-item {
-      background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 14px;
-      padding: 12px 14px; margin-bottom: 10px; transition: border-color 0.2s, box-shadow 0.2s;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--line);
+      background: none;
     }
-    .card-item:hover { border-color: #f472b6; box-shadow: 0 4px 14px rgba(244, 114, 182, 0.15); }
-    .card-head { display: flex; justify-content: space-between; align-items: center; font-size: 14.5px; margin-bottom: 6px; }
-    .badge { background: #fce7f3; color: #be185d; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 800; }
-    .card-sub { font-size: 12.5px; color: #475569; margin-bottom: 10px; line-height: 1.5; }
-    .card-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-    
-    /* 通用操作按钮样式 - 升级大触控面积与悬浮交互 */
-    .card-actions button, .action-btn {
-      padding: 9px 14px; min-height: 38px; font-size: 13.5px; font-weight: 700; border-radius: 10px;
-      border: 1.5px solid #f472b6; background: #ffffff; color: #be185d; cursor: pointer;
-      display: inline-flex; align-items: center; justify-content: center; gap: 4px;
-      transition: all 0.15s ease-in-out;
+    .card-item:last-child { border-bottom: none; }
+
+    .card-head {
+      display: flex; justify-content: space-between; align-items: baseline;
+      gap: 8px; margin-bottom: 4px;
     }
-    .card-actions button:hover, .action-btn:hover {
-      background: #fdf2f8; border-color: #db2777; transform: translateY(-1.5px);
-      box-shadow: 0 4px 12px rgba(219, 39, 119, 0.22);
-    }
-    .card-actions button:active, .action-btn:active {
-      transform: translateY(1px); box-shadow: none;
-    }
-    .card-actions button:disabled, .action-btn:disabled {
-      opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none;
+    .card-head strong {
+      font-size: 13.5px; font-weight: 600; letter-spacing: 0.01em;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
 
-    /* 右上角环境与天气控制舱 - 宽度扩大至 310px，按钮尺寸与行高整体提升 */
-    .env-pod {
-      position: fixed; top: 84px; right: 20px; width: min(310px, 26vw);
-      background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(14px);
-      border-radius: 20px; padding: 16px 18px; border: 1.5px solid rgba(244, 114, 182, 0.4);
-      box-shadow: 0 16px 36px rgba(15, 23, 42, 0.18); z-index: 20;
+    .badge {
+      font-size: 11px; color: var(--ink-soft);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
     }
-    .env-pod h4 {
-      font-size: 13.5px; font-weight: 800; color: #1e293b; margin: 12px 0 8px;
-      display: flex; align-items: center; gap: 6px;
-    }
-    .env-pod h4:first-child { margin-top: 2px; }
-    .btn-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 10px; margin-bottom: 10px; }
-    .btn-grid .action-btn { min-height: 42px; font-size: 13.5px; }
 
-    /* 倍速选择栏 */
-    .speed-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 4px; }
-    .speed-grid .action-btn { min-height: 38px; font-size: 14.5px; font-weight: 800; }
-
-    /* 底部中央视角切换与实机渲染按钮 - 极大改善视距与点击舒适度 */
-    .bottom-bar {
-      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-      display: flex; gap: 12px; padding: 10px 20px;
-      background: rgba(15, 23, 42, 0.88); backdrop-filter: blur(16px);
-      border-radius: 999px; z-index: 20; align-items: center;
-      box-shadow: 0 10px 32px rgba(0, 0, 0, 0.35);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+    .card-sub {
+      font-size: 11.5px; color: var(--ink-soft);
+      line-height: 1.6; margin-bottom: 9px;
+      font-variant-numeric: tabular-nums;
     }
+
+    .card-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    /* ---------- 按钮：纸面 + 墨线，不用渐变 ---------- */
+    .btn, .card-actions button, .action-btn {
+      appearance: none;
+      padding: 6px 11px;
+      font-size: 12.5px; font-weight: 500;
+      font-family: var(--sans);
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px solid var(--line-strong);
+      border-radius: 4px;
+      cursor: pointer;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+      transition: background 0.14s, border-color 0.14s, transform 0.06s;
+      white-space: nowrap;
+    }
+
+    .btn:hover, .card-actions button:hover, .action-btn:hover {
+      background: #ffffff;
+      border-color: rgba(35, 38, 43, 0.34);
+    }
+
+    .btn:active, .card-actions button:active, .action-btn:active {
+      transform: translateY(1px);
+      background: rgba(35, 38, 43, 0.05);
+      box-shadow: none;
+    }
+
+    .btn:disabled, .card-actions button:disabled, .action-btn:disabled {
+      opacity: 0.4; cursor: not-allowed; transform: none;
+      background: transparent; box-shadow: none;
+    }
+
+    .btn-tone { color: var(--accent); border-color: rgba(156, 58, 48, 0.34); background: var(--accent-soft); }
+    .btn-tone:hover { background: rgba(156, 58, 48, 0.15); border-color: rgba(156, 58, 48, 0.5); }
+
+    .btn-wide { width: 100%; margin-top: 8px; }
+
+    .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .speed-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .speed-grid button { padding: 6px 0; font-variant-numeric: tabular-nums; }
+
+    /* ---------- 日志 ---------- */
+    .log-box {
+      flex-shrink: 0;
+      padding: 9px 16px 10px;
+      border-top: 1px solid var(--line);
+      background: rgba(240, 236, 228, 0.6);
+      font-size: 11.5px; line-height: 1.72;
+      color: var(--ink-soft);
+      max-height: 104px; overflow-y: auto;
+      font-variant-numeric: tabular-nums;
+    }
+    .log-line {
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    /* ---------- 底部机位条 ---------- */
+    .dock {
+      position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%);
+      display: flex; align-items: center; gap: 2px; padding: 4px;
+      background: rgba(30, 32, 36, 0.86);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      border-radius: 7px;
+      z-index: 26;
+    }
+
     .cam-btn {
-      padding: 10px 20px; border-radius: 999px; border: none;
-      background: transparent; color: #cbd5e1; font-size: 14.5px; font-weight: 800; cursor: pointer;
-      min-height: 44px; display: inline-flex; align-items: center; justify-content: center;
-      transition: all 0.2s ease-in-out;
+      padding: 6px 13px; border-radius: 4px;
+      border: none; background: transparent;
+      color: rgba(233, 229, 222, 0.72);
+      font-size: 12.5px; font-weight: 500; font-family: var(--sans);
+      cursor: pointer; white-space: nowrap;
+      transition: background 0.14s, color 0.14s;
+      letter-spacing: 0.02em;
     }
-    .cam-btn:hover { background: rgba(255, 255, 255, 0.12); color: #ffffff; transform: translateY(-1.5px); }
-    .cam-btn.active {
-      background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
-      color: #ffffff; box-shadow: 0 4px 16px rgba(236, 72, 153, 0.45);
-    }
-    .cam-btn-shot {
-      background: linear-gradient(135deg, #f43f5e 0%, #be123c 100%) !important;
-      color: #ffffff !important; box-shadow: 0 4px 16px rgba(244, 63, 94, 0.4) !important;
-    }
-    .cam-btn-shot:hover { filter: brightness(1.1); transform: translateY(-1.5px); }
+    .cam-btn:hover { background: rgba(255, 255, 255, 0.10); color: #fff; }
+    .cam-btn.active { background: rgba(249, 246, 240, 0.94); color: #23262b; }
 
+    .dock-sep { width: 1px; height: 18px; background: rgba(255, 255, 255, 0.14); margin: 0 3px; }
+
+    /* 在观赏视角按方向键时，闪一下第三人称按钮 */
+    @keyframes nudgePulse {
+      0%, 100% { background: transparent; color: rgba(233, 229, 222, 0.72); }
+      45% { background: rgba(249, 246, 240, 0.92); color: #23262b; }
+    }
+    .cam-btn.nudge { animation: nudgePulse 0.7s ease 2; }
+    .cam-btn-shot { color: #e8b4ab; }
+    .cam-btn-shot:hover { background: rgba(156, 58, 48, 0.30); color: #ffe6e1; }
+
+
+    /* 自由视角的操作提示 */
+    #cam-hint {
+      position: fixed; left: 50%; bottom: 52px; transform: translateX(-50%);
+      display: none;
+      padding: 5px 12px;
+      font-size: 11.5px; letter-spacing: 0.04em;
+      color: rgba(233, 229, 222, 0.62);
+      background: rgba(30, 32, 36, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 4px;
+      z-index: 25; pointer-events: none;
+      white-space: nowrap;
+    }
+
+    /* ---------- 互动提示 ---------- */
     #interact-prompt {
-      position: fixed; bottom: 88px; left: 50%; transform: translateX(-50%);
-      background: linear-gradient(135deg, #be185d 0%, #9d174d 100%);
-      color: #fff; padding: 12px 28px;
-      border-radius: 999px; font-size: 15.5px; font-weight: 800; display: none;
-      align-items: center; gap: 10px; z-index: 25; cursor: pointer;
-      box-shadow: 0 8px 24px rgba(190, 24, 93, 0.45);
-      border: 2px solid rgba(255, 255, 255, 0.35);
-      animation: pulsePrompt 1.8s infinite;
-    }
-    @keyframes pulsePrompt {
-      0%, 100% { transform: translateX(-50%) scale(1); }
-      50% { transform: translateX(-50%) scale(1.05); }
+      position: fixed; bottom: 86px; left: 50%; transform: translateX(-50%);
+      background: rgba(30, 32, 36, 0.92);
+      color: #f3efe8; padding: 8px 18px;
+      border-radius: 5px; font-size: 13px; font-weight: 500;
+      display: none; align-items: center; gap: 8px;
+      z-index: 25; cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      letter-spacing: 0.02em;
     }
 
+    /* ---------- 提示条 ---------- */
     #game-toast {
-      position: fixed; top: 82px; left: 50%; transform: translateX(-50%) translateY(-20px);
-      background: rgba(15, 23, 42, 0.94); color: #fff; padding: 12px 26px;
-      border-radius: 999px; font-size: 14.5px; font-weight: 700;
-      opacity: 0; pointer-events: none; transition: all 0.25s; z-index: 40;
-      border: 1px solid rgba(244, 114, 182, 0.4);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      position: fixed; top: 46px; left: 50%;
+      transform: translateX(-50%) translateY(-8px);
+      background: rgba(30, 32, 36, 0.94); color: #f3efe8;
+      padding: 8px 18px; border-radius: 5px;
+      font-size: 12.5px; font-weight: 400;
+      opacity: 0; pointer-events: none; transition: all 0.22s;
+      z-index: 40;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      max-width: 60vw; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis;
     }
     #game-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    .log-box {
-      padding: 10px 14px; background: #0f172a; color: #e2e8f0; font-size: 12.5px;
-      line-height: 1.6; max-height: 110px; overflow-y: auto; border-top: 1px solid #334155;
-    }
-    .log-line { margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-    /* 实机渲染截图弹窗 */
+    /* ---------- 截图弹窗 ---------- */
     #screenshot-modal {
-      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85);
+      position: fixed; inset: 0; background: rgba(20, 22, 26, 0.86);
       display: none; align-items: center; justify-content: center; z-index: 50;
     }
     .modal-box {
-      background: #fff; padding: 22px; border-radius: 20px; max-width: 82vw;
-      display: flex; flex-direction: column; gap: 14px; align-items: center;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      background: var(--paper-solid); padding: 18px;
+      border-radius: 8px; max-width: 82vw;
+      display: flex; flex-direction: column; gap: 12px; align-items: center;
+      border: 1px solid var(--line-strong);
     }
-    .modal-box h3 { font-size: 18px; font-weight: 800; color: #0f172a; }
-    .modal-box img { max-width: 76vw; max-height: 68vh; border-radius: 14px; border: 3px solid #f472b6; }
+    .modal-box h3 {
+      font-size: 14px; font-weight: 600; color: var(--ink);
+      font-family: var(--serif); letter-spacing: 0.08em;
+    }
+    .modal-box img {
+      max-width: 76vw; max-height: 66vh; border-radius: 3px;
+      border: 1px solid var(--line-strong);
+    }
+    .modal-actions { display: flex; gap: 8px; }
+    .modal-actions a { text-decoration: none; display: inline-flex; align-items: center; }
+
+    /* ---------- 滚动条 ---------- */
+    .tab-scroll::-webkit-scrollbar, .log-box::-webkit-scrollbar { width: 6px; }
+    .tab-scroll::-webkit-scrollbar-thumb, .log-box::-webkit-scrollbar-thumb {
+      background: rgba(35, 38, 43, 0.18); border-radius: 3px;
+    }
+    .tab-scroll::-webkit-scrollbar-track, .log-box::-webkit-scrollbar-track { background: transparent; }
+
+    @media (max-width: 900px) {
+      :root { --ledger-w: 320px; --env-w: 268px; }
+      .hud-item { padding: 0 8px; font-size: 11.5px; }
+    }
   </style>
 </head>
 <body>
   <canvas id="game-canvas"></canvas>
 
-  <!-- 顶部 9 项实时经营指标栏 -->
+  <!-- 顶部经营指标细条 -->
   <div class="top-hud">
-    <div class="hud-pill">🌸 樱町本通 <span class="val" id="hud-level-stars">Lv.16 ★★★★</span></div>
-    <div class="hud-pill">💴 资金 <span class="val" id="hud-funds">¥128,500</span></div>
-    <div class="hud-pill">🕒 <span class="val" id="hud-day-time">Day 12 · 15:30</span></div>
-    <div class="hud-pill">🚶 客流 <span class="val" id="hud-visitors">420 人/日</span></div>
-    <div class="hud-pill">🏘️ 住户 <span class="val" id="hud-population">68户 (196人)</span></div>
-    <div class="hud-pill">😊 满意度 <span class="val" id="hud-satisfaction">86%</span></div>
-    <div class="hud-pill">🖐️ 巡视配额 <span class="val" id="hud-quota">3 / 3</span></div>
-    <div class="hud-pill">⚔️ 控制度 <span class="val" id="hud-control">68%</span></div>
+    <div class="hud-item"><span class="hud-brand">樱町本通</span></div>
+    <div class="hud-item"><span class="hud-label">等级</span><span class="val" id="hud-level-stars">Lv.16 ★★★★</span></div>
+    <div class="hud-item"><span class="hud-label">资金</span><span class="val" id="hud-funds">¥128,500</span></div>
+    <div class="hud-item"><span class="hud-label">时间</span><span class="val" id="hud-day-time">Day 12 · 15:30</span></div>
+    <div class="hud-item"><span class="hud-label">客流</span><span class="val" id="hud-visitors">420 人/日</span></div>
+    <div class="hud-item"><span class="hud-label">住户</span><span class="val" id="hud-population">68户 196人</span></div>
+    <div class="hud-item"><span class="hud-label">满意度</span><span class="val" id="hud-satisfaction">86%</span></div>
+    <div class="hud-item"><span class="hud-label">巡视</span><span class="val" id="hud-quota">3 / 3</span></div>
+    <div class="hud-item"><span class="hud-label">控制度</span><span class="val" id="hud-control">68%</span></div>
   </div>
 
-  <!-- 左侧经营手账 -->
-  <div class="side-notebook">
-    <div class="tabs-bar">
-      <button class="tab-btn active" onclick="switchTab('shops', this)">🏪 商铺(16)</button>
-      <button class="tab-btn" onclick="switchTab('hero', this)">👘 主角&隐患</button>
-      <button class="tab-btn" onclick="switchTab('personality', this)">🌸 街区性格</button>
-      <button class="tab-btn" onclick="switchTab('war', this)">⚔️ 街区争霸</button>
-    </div>
-
-    <div id="tab-shops" class="tab-pane active">
-      <div id="shop-list-container"></div>
-    </div>
-
-    <div id="tab-hero" class="tab-pane">
-      <h4 style="margin-bottom:6px;font-size:12px;">👘 街区长 3D 实时换装（L3-5 形象加成）</h4>
-      <div class="btn-grid" style="margin-bottom:12px;">
-        <button class="action-btn" onclick="window.gameApp.changeOutfit('suit')">👔 绀青正装</button>
-        <button class="action-btn" onclick="window.gameApp.changeOutfit('happi')">🏮 祭典法被</button>
-        <button class="action-btn" onclick="window.gameApp.changeOutfit('shiba')">🐕 柴犬玩偶</button>
-        <button class="action-btn" onclick="window.gameApp.changeOutfit('artisan')">🛠️ 职人围裙</button>
+  <!-- 左侧经营手账，默认收起 -->
+  <aside id="ledger" class="panel collapsed">
+    <button class="panel-lip lip-right" onclick="togglePanel('ledger')" title="经营手账（B 键）">经营手账</button>
+    <div class="panel-inner">
+      <div class="tabs-bar">
+        <button class="tab-btn active" onclick="switchTab('shops', this)">商铺</button>
+        <button class="tab-btn" onclick="switchTab('hero', this)">主角</button>
+        <button class="tab-btn" onclick="switchTab('personality', this)">性格</button>
+        <button class="tab-btn" onclick="switchTab('war', this)">争霸</button>
       </div>
-      <h4 style="margin-bottom:6px;font-size:12px;">🔍 街道隐患（L3-1 走近 8.5m 揭开迷雾）</h4>
-      <div id="issue-list-container"></div>
-    </div>
 
-    <div id="tab-personality" class="tab-pane">
-      <p style="font-size:12px;color:#64748b;margin-bottom:10px;">切换街区性格将重排四维满意度权重并改变争霸扩张武器：</p>
-      <div class="btn-grid">
-        <button class="action-btn" onclick="window.gameApp.changePersonality('tourist')">📸 游客街 (人流磁铁)</button>
-        <button class="action-btn" onclick="window.gameApp.changePersonality('resident')">🏡 居民街 (品质虹吸)</button>
-        <button class="action-btn" onclick="window.gameApp.changePersonality('craft')">🍵 手艺街 (稀缺老铺)</button>
-        <button class="action-btn" onclick="window.gameApp.changePersonality('night')">🏮 深夜街 (时差错位)</button>
+      <div class="tab-scroll">
+        <div id="tab-shops" class="tab-pane active">
+          <div id="shop-list-container"></div>
+        </div>
+
+        <div id="tab-hero" class="tab-pane">
+          <h4 class="pane-title">街区长换装</h4>
+          <div class="btn-grid">
+            <button class="btn" onclick="window.gameApp.changeOutfit('suit')">绀青正装</button>
+            <button class="btn" onclick="window.gameApp.changeOutfit('happi')">祭典法被</button>
+            <button class="btn" onclick="window.gameApp.changeOutfit('shiba')">柴犬玩偶</button>
+            <button class="btn" onclick="window.gameApp.changeOutfit('artisan')">职人围裙</button>
+          </div>
+          <h4 class="pane-title">街道隐患</h4>
+          <div id="issue-list-container"></div>
+        </div>
+
+        <div id="tab-personality" class="tab-pane">
+          <p class="pane-note">切换性格会重排四维满意度的权重，也会改变争霸时的扩张手段。</p>
+          <div class="btn-grid">
+            <button class="btn" onclick="window.gameApp.changePersonality('tourist')">游客街</button>
+            <button class="btn" onclick="window.gameApp.changePersonality('resident')">居民街</button>
+            <button class="btn" onclick="window.gameApp.changePersonality('craft')">手艺街</button>
+            <button class="btn" onclick="window.gameApp.changePersonality('night')">深夜街</button>
+          </div>
+        </div>
+
+        <div id="tab-war" class="tab-pane">
+          <p class="pane-note">对手 港町·冷蓝财阀街区。控制度连续五日高于七成，触发商业兼并。</p>
+          <div class="btn-grid">
+            <button class="btn" onclick="window.gameApp.toggleTerritoryOverlay()">渗透图层</button>
+            <button class="btn" onclick="window.showToastMsg(window.sim.extendRoad().msg);window.gameApp.refreshAllHUD()">修路扩张 ¥15k</button>
+            <button class="btn" onclick="window.showToastMsg(window.sim.runCompetitionTactic('festival').msg);window.gameApp.refreshAllHUD()">夜樱祭典 ¥8k</button>
+            <button class="btn" onclick="window.showToastMsg(window.sim.runCompetitionTactic('nightpromo').msg);window.gameApp.refreshAllHUD()">深夜拉客 ¥5k</button>
+          </div>
+          <button class="btn btn-tone btn-wide" onclick="window.sim.settle();window.gameApp.refreshAllHUD();window.gameApp.showToast('已执行 04:00 日结算')">立即结算当日</button>
+        </div>
+      </div>
+
+      <div class="log-box" id="sim-log-list"></div>
+    </div>
+  </aside>
+
+  <!-- 右侧环境舱，默认收起 -->
+  <aside id="env" class="panel collapsed">
+    <button class="panel-lip lip-left" onclick="togglePanel('env')" title="环境与倍速（V 键）">环境</button>
+    <div class="panel-inner">
+      <div class="tab-scroll" style="padding: 4px 16px 12px;">
+        <h4 class="pane-title">天气</h4>
+        <div class="btn-grid">
+          <button class="btn" onclick="window.gameApp.changeWeather('sakura')">樱吹雪 ×1.3</button>
+          <button class="btn" onclick="window.gameApp.changeWeather('sunny')">晴空</button>
+          <button class="btn" onclick="window.gameApp.changeWeather('rain')">春雨</button>
+          <button class="btn" onclick="window.gameApp.changeWeather('night_rain')">夜雨</button>
+        </div>
+
+        <h4 class="pane-title">季节与时段</h4>
+        <div class="btn-grid">
+          <button class="btn" onclick="window.gameApp.changeSeasonVegetation('sakura')">春樱</button>
+          <button class="btn" onclick="window.gameApp.changeSeasonVegetation('maple')">秋枫</button>
+          <button class="btn" onclick="window.gameApp.changeSeasonVegetation('ginkgo')">银杏</button>
+          <button class="btn" onclick="window.gameApp.timePresetOverride = (window.gameApp.timePresetOverride === 'night' ? null : 'night')">切换夜市</button>
+        </div>
+
+        <h4 class="pane-title">模拟倍速</h4>
+        <div class="speed-grid">
+          <button class="btn" onclick="window.sim.speed=0">暂停</button>
+          <button class="btn" onclick="window.sim.speed=1">1×</button>
+          <button class="btn" onclick="window.sim.speed=2">2×</button>
+          <button class="btn" onclick="window.sim.speed=4">4×</button>
+        </div>
       </div>
     </div>
+  </aside>
 
-    <div id="tab-war" class="tab-pane">
-      <p style="font-size:12px;color:#475569;margin-bottom:10px;">对手：<strong>港町·冷蓝财阀街区</strong>（连续5日超70%控制度触发商业兼并）</p>
-      <div class="btn-grid">
-        <button class="action-btn" onclick="window.gameApp.toggleTerritoryOverlay()">🗺️ 3D渗透图层</button>
-        <button class="action-btn" onclick="window.showToastMsg(window.sim.extendRoad().msg);window.gameApp.refreshAllHUD()">🛣️ 修路扩张(¥15k)</button>
-        <button class="action-btn" onclick="window.showToastMsg(window.sim.runCompetitionTactic('festival').msg);window.gameApp.refreshAllHUD()">🏮 夜樱祭典(¥8k)</button>
-        <button class="action-btn" onclick="window.showToastMsg(window.sim.runCompetitionTactic('nightpromo').msg);window.gameApp.refreshAllHUD()">⚡ 深夜拉客(¥5k)</button>
-      </div>
-      <button class="action-btn" style="width:100%;margin-top:6px;" onclick="window.sim.settle();window.gameApp.refreshAllHUD();window.gameApp.showToast('💴 已手动执行 04:00 日结算')">💴 立即执行 04:00 日结算</button>
-    </div>
-
-    <div class="log-box" id="sim-log-list"></div>
-  </div>
-
-  <!-- 右上角环境、四态天气与倍速控制舱 -->
-  <div class="env-pod">
-    <h4>🌦️ 天气四态（实时粒子与湿润反射）</h4>
-    <div class="btn-grid">
-      <button class="action-btn" onclick="window.gameApp.changeWeather('sakura')">🌸 樱吹雪(×1.3)</button>
-      <button class="action-btn" onclick="window.gameApp.changeWeather('sunny')">☀️ 晴空万里</button>
-      <button class="action-btn" onclick="window.gameApp.changeWeather('rain')">🌧️ 春雨绵绵</button>
-      <button class="action-btn" onclick="window.gameApp.changeWeather('night_rain')">⛈️ 夜雨霓虹</button>
-    </div>
-    <h4>🍃 季节植被与光影时段</h4>
-    <div class="btn-grid">
-      <button class="action-btn" onclick="window.gameApp.changeSeasonVegetation('sakura')">🌸 春樱</button>
-      <button class="action-btn" onclick="window.gameApp.changeSeasonVegetation('maple')">🍁 秋枫</button>
-      <button class="action-btn" onclick="window.gameApp.changeSeasonVegetation('ginkgo')">🍂 银杏</button>
-      <button class="action-btn" onclick="window.gameApp.timePresetOverride = (window.gameApp.timePresetOverride === 'night' ? null : 'night')">🏮 切换夜市</button>
-    </div>
-    <h4>⏩ 模拟倍速</h4>
-    <div class="speed-grid">
-      <button class="action-btn" onclick="window.sim.speed=0">⏸ 暂停</button>
-      <button class="action-btn" onclick="window.sim.speed=1">1×</button>
-      <button class="action-btn" onclick="window.sim.speed=2">2×</button>
-      <button class="action-btn" onclick="window.sim.speed=4">4×</button>
-    </div>
-  </div>
-
-  <!-- 接近商铺或隐患时的 E 键互动提示 -->
+  <!-- 接近商铺或隐患时的互动提示 -->
   <div id="interact-prompt" onclick="window.gameApp.triggerNearbyInteraction()">
-    <span class="prompt-text">按 [E] 互动</span>
+    <span class="prompt-text">按 E 互动</span>
   </div>
 
-  <!-- 底部视角机位切换栏 + 实机渲染截图按钮 -->
-  <div class="bottom-bar">
-    <button class="cam-btn active" data-cam-mode="rpg" onclick="window.gameApp.applyCameraMode('rpg')">🎮 正前45° RPG视角</button>
-    <button class="cam-btn" data-cam-mode="iso" onclick="window.gameApp.applyCameraMode('iso')">📐 等距45° (58,48,58)</button>
-    <button class="cam-btn" data-cam-mode="panoramic" onclick="window.gameApp.applyCameraMode('panoramic')">🏙️ 全景鸟瞰 (88,72,88)</button>
-    <button class="cam-btn cam-btn-shot" onclick="window.gameApp.captureScreenshot()">📸 渲染实机高清图</button>
+  <!-- 底部机位与截图 -->
+  <div id="cam-hint"></div>
+
+  <div class="dock">
+    <button class="cam-btn" data-cam-mode="panoramic" onclick="window.gameApp.applyCameraMode('panoramic')">全景</button>
+    <button class="cam-btn active" data-cam-mode="third" onclick="window.gameApp.applyCameraMode('third')">第三人称</button>
+    <button class="cam-btn" data-cam-mode="free" onclick="window.gameApp.applyCameraMode('free')">自由视角</button>
+    <div class="dock-sep"></div>
+    <button class="cam-btn cam-btn-shot" onclick="window.gameApp.captureScreenshot()">截图</button>
   </div>
 
   <div id="game-toast"></div>
 
-  <!-- 实机渲染图预览弹窗 -->
   <div id="screenshot-modal" onclick="if(event.target===this)this.style.display='none'">
     <div class="modal-box">
-      <h3>📸 《樱町计划》实机 WebGL 渲染成片</h3>
+      <h3>樱町计划 · 实机渲染</h3>
       <img id="screenshot-preview-img" alt="实机渲染截图" />
-      <div style="display:flex;gap:12px;">
-        <a id="screenshot-download-btn" class="action-btn" style="text-decoration:none;padding:8px 16px;">💾 下载保存高清 PNG</a>
-        <button class="action-btn" onclick="document.getElementById('screenshot-modal').style.display='none'">关闭</button>
+      <div class="modal-actions">
+        <a id="screenshot-download-btn" class="btn btn-tone">下载 PNG</a>
+        <button class="btn" onclick="document.getElementById('screenshot-modal').style.display='none'">关闭</button>
       </div>
     </div>
   </div>
 
   <script>
-    window.switchTab = function(tabName, btnEl) {
+    window.switchTab = function (tabName, btnEl) {
       document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       document.getElementById('tab-' + tabName).classList.add('active');
       btnEl.classList.add('active');
     };
-    window.showToastMsg = function(msg) {
+
+    window.showToastMsg = function (msg) {
       if (window.gameApp) window.gameApp.showToast(msg);
     };
+
+    // 面板开合：默认都收着，先把场景让出来
+    window.togglePanel = function (id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.toggle('collapsed');
+    };
+
+    window.addEventListener('keydown', e => {
+      if (e.target.tagName === 'INPUT') return;
+      if (e.code === 'KeyB') window.togglePanel('ledger');
+      if (e.code === 'KeyV') window.togglePanel('env');
+      if (e.code === 'Escape') {
+        document.querySelectorAll('.panel').forEach(p => p.classList.add('collapsed'));
+        const modal = document.getElementById('screenshot-modal');
+        if (modal) modal.style.display = 'none';
+      }
+    });
   </script>
   <script type="module" src="./src/main.js"></script>
 </body>
